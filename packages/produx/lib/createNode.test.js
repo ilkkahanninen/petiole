@@ -22,6 +22,12 @@ const createTestNode = () => createNode({
       });
     },
   },
+  selectors: {
+    itemCount: state => state.items.length,
+    itemsBefore: (state, before) => (
+      state.items.filter(item => item < before).length
+    ),
+  },
   reducer: {
     addItem(state, { item }) {
       return state.set('items', state.items.concat([ item ]));
@@ -135,4 +141,17 @@ test('function action creator is served with wrapped dispatcher', function(t) {
     t.deepEqual(action, expectations[index]);
     index++;
   });
+});
+
+test('selector uses namespace to select correct branch of state', function(t) {
+  const node = createTestNode();
+  const state = {
+    test: {
+      items: [1, 2, 3],
+    },
+  };
+
+  t.equal(node.selectors.itemCount(state), 3);
+  t.equal(node.selectors.itemsBefore(state, 3), 2);
+  t.end();
 });

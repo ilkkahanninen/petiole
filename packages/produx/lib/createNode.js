@@ -1,4 +1,8 @@
 const Immutable = require('seamless-immutable');
+const mapKeys = require('lodash.mapkeys');
+const mapValues = require('lodash.mapvalues');
+const zipObject = require('lodash.zipobject');
+const memoize = require('./memoize');
 
 function createNode({
   namespace = 'global',
@@ -29,25 +33,17 @@ function createNode({
   );
 
   // Prefix action types with node id
-  node.actionTypes = Object.keys(actions)
+  const typeNames = Object.keys(actions)
     .concat(Object.keys(reducer))
     .concat(actionTypes)
-    .filter(name => name.indexOf('/') < 0)
-    .reduce(
-      (types, type) => Object.assign(types, { [type]: actionName(type) }),
-      {}
-    );
+    .filter(name => name.indexOf('/') < 0);
+  node.actionTypes = zipObject(
+    typeNames,
+    typeNames.map(actionName)
+  );
 
   // Map prefixed action type names to reducer functions
-  const reducerFuncs = Object.keys(reducer).reduce(
-    (funcs, name) => {
-      const prefixedName = actionName(name);
-      return Object.assign(funcs, {
-        [prefixedName]: reducer[name],
-      });
-    },
-    {}
-  );
+  const reducerFuncs = mapKeys(reducer, (func, name) => actionName(name));
 
   // Create main reducer function
   node.reducer = (state = Immutable(initialState), action) => {
@@ -59,28 +55,27 @@ function createNode({
   };
 
   // Create action creators
-  node.actions = Object.keys(actions).reduce(
-    (acts, name) => {
-      const actionCreator = actions[name];
-      let func;
+  node.actions = mapValues(
+    actions,
+    (actionCreator, name) => {
       const type = actionName(name);
 
       // Boolean -> simple action creators
       if (typeof actionCreator === 'boolean') {
-        func = () => Immutable({ type });
+        return () => Immutable({ type });
       }
 
       // Strings -> simple action creatos with one argument
-      else if (typeof actionCreator === 'string') {
-        func = arg => Immutable({
+      if (typeof actionCreator === 'string') {
+        return arg => Immutable({
           type,
           [actionCreator]: arg,
         });
       }
 
       // Arrays -> simple action creators with multiple arguments
-      else if (Array.isArray(actionCreator)) {
-        func = (...args) => Immutable(actionCreator.reduce(
+      if (Array.isArray(actionCreator)) {
+        return (...args) => Immutable(actionCreator.reduce(
           (result, key, index) => Object.assign(
             result,
             { [key]: args[index] }
@@ -90,14 +85,14 @@ function createNode({
       }
 
       // Objects -> simplea action creator with fixed payload
-      else if (typeof actionCreator === 'object') {
+      if (typeof actionCreator === 'object') {
         const payload = ensureActionType(actionCreator, type);
-        func = () => payload;
+        return () => payload;
       }
 
       // Functions -> assume redux-thunk, wrap with custom dispatcher
-      else if (typeof actionCreator === 'function') {
-        func = (...args) => {
+      if (typeof actionCreator === 'function') {
+        return (...args) => {
           return (dispatch, ...other) => {
             return actionCreator(...args).call(
               node.actions,
@@ -117,15 +112,17 @@ function createNode({
 
       // TODO: Promises
 
-      else {
-        console.warn(`Invalid action declaration for ${name}`);
-      }
 
-      return func
-        ? Object.assign(acts, { [name]: func })
-        : acts;
-    },
-    {}
+      return actionCreator;
+    }
+  );
+
+  // Map selectors
+  node.selectors = mapValues(
+    selectors,
+    selector => memoize(
+      (state, ...rest) => selector(state[namespace], ...rest)
+    )
   );
 
   return node;
