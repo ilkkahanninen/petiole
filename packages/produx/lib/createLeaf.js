@@ -2,10 +2,10 @@ const Immutable = require('seamless-immutable');
 const mapKeys = require('lodash.mapkeys');
 const mapValues = require('lodash.mapvalues');
 const zipObject = require('lodash.zipobject');
+const get = require('lodash.get');
 const memoize = require('./memoize');
 
-function createNode({
-  namespace = 'global',
+function createLeaf({
   initialState = {},
   actions = {},
   selectors = {},
@@ -13,7 +13,28 @@ function createNode({
   actionTypes = [],
 }) {
 
-  const node = {};
+  let namespace, namespaceArray, reducerFuncs;
+
+  const leaf = {
+    __isLeaf: true,
+    setNamespace(name) {
+      namespace = name;
+      namespaceArray = name.split('/');
+
+      // Map prefixed action type names to reducer functions
+      reducerFuncs = mapKeys(reducer, (func, name) => actionName(name));
+
+      // Prefix action types with leaf namespace
+      const typeNames = Object.keys(actions)
+        .concat(Object.keys(reducer))
+        .concat(actionTypes)
+        .filter(name => name.indexOf('/') < 0);
+      leaf.actionTypes = zipObject(
+        typeNames,
+        typeNames.map(actionName)
+      );
+    },
+  };
 
   // Helper utils
   const actionName = name => (
@@ -32,21 +53,9 @@ function createNode({
     )
   );
 
-  // Prefix action types with node id
-  const typeNames = Object.keys(actions)
-    .concat(Object.keys(reducer))
-    .concat(actionTypes)
-    .filter(name => name.indexOf('/') < 0);
-  node.actionTypes = zipObject(
-    typeNames,
-    typeNames.map(actionName)
-  );
-
-  // Map prefixed action type names to reducer functions
-  const reducerFuncs = mapKeys(reducer, (func, name) => actionName(name));
 
   // Create main reducer function
-  node.reducer = (state = Immutable(initialState), action) => {
+  leaf.reducer = (state = Immutable(initialState), action) => {
     const { type } = action;
     if (reducerFuncs[type]) {
       return reducerFuncs[type].call(null, state, action);
@@ -55,20 +64,18 @@ function createNode({
   };
 
   // Create action creators
-  node.actions = mapValues(
+  leaf.actions = mapValues(
     actions,
     (actionCreator, name) => {
-      const type = actionName(name);
-
       // Boolean -> simple action creators
       if (typeof actionCreator === 'boolean') {
-        return () => Immutable({ type });
+        return () => Immutable({ type: actionName(name) });
       }
 
       // Strings -> simple action creatos with one argument
       if (typeof actionCreator === 'string') {
         return arg => Immutable({
-          type,
+          type: actionName(name),
           [actionCreator]: arg,
         });
       }
@@ -80,14 +87,13 @@ function createNode({
             result,
             { [key]: args[index] }
           ),
-          { type }
+          { type: actionName(name) }
         ));
       }
 
       // Objects -> simplea action creator with fixed payload
       if (typeof actionCreator === 'object') {
-        const payload = ensureActionType(actionCreator, type);
-        return () => payload;
+        return () => ensureActionType(actionCreator, actionName(name));
       }
 
       // Functions -> assume redux-thunk, wrap with custom dispatcher
@@ -95,14 +101,14 @@ function createNode({
         return (...args) => {
           return (dispatch, ...other) => {
             return actionCreator(...args).call(
-              node.actions,
+              leaf.actions,
               action => {
                 if (!action) {
-                  return dispatch({ type });
+                  return dispatch({ type: actionName(name) });
                 }
                 return typeof action === 'string'
                   ? dispatch({ type: actionName(action) })
-                  : dispatch(ensureActionType(action, type));
+                  : dispatch(ensureActionType(action, actionName(name)));
               },
               ...other
             );
@@ -118,14 +124,17 @@ function createNode({
   );
 
   // Map selectors
-  node.selectors = mapValues(
+  leaf.selectors = mapValues(
     selectors,
     selector => memoize(
-      (state, ...rest) => selector(state[namespace], ...rest)
+      (state, ...rest) => selector(
+        get(state, namespaceArray),
+        ...rest
+      )
     )
   );
 
-  return node;
+  return leaf;
 }
 
-module.exports = createNode;
+module.exports = createLeaf;

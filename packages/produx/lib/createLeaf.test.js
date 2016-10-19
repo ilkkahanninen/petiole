@@ -1,59 +1,64 @@
 const test = require('tape');
 const Immutable = require('seamless-immutable');
-const createNode = require('./createNode');
+const createLeaf = require('./createLeaf');
 
-const createTestNode = () => createNode({
-  namespace: 'test',
-  initialState: {
-    items: [],
-  },
-  actions: {
-    toggle: true,
-    trigger: 'value',
-    touch: { time: 'hammer' },
-    turnOn: { type: 'turn', value: true },
-    turnOff: { type: 'turn', value: false },
-    addItem: ['item'],
-    fetchItem: () => function(dispatch) {
-      dispatch();
-      setImmediate(() => {
-        dispatch(this.addItem('fetched'));
-        setImmediate(() => dispatch('ready'));
-      });
+const createTestLeaf = () => {
+  const leaf = createLeaf({
+    namespace: 'test',
+    initialState: {
+      items: [],
     },
-  },
-  selectors: {
-    itemCount: state => state.items.length,
-    itemsBefore: (state, before) => (
-      state.items.filter(item => item < before).length
-    ),
-  },
-  reducer: {
-    addItem(state, { item }) {
-      return state.set('items', state.items.concat([ item ]));
+    actions: {
+      toggle: true,
+      trigger: 'value',
+      touch: { time: 'hammer' },
+      turnOn: { type: 'turn', value: true },
+      turnOff: { type: 'turn', value: false },
+      addItem: ['item'],
+      fetchItem: () => function(dispatch) {
+        dispatch();
+        setImmediate(() => {
+          dispatch(this.addItem('fetched'));
+          setImmediate(() => dispatch('ready'));
+        });
+      },
     },
-    'otherModule/setName': (state, { name }) => {
-      return state.set('name', name);
+    selectors: {
+      itemCount: state => state.items.length,
+      itemsBefore: (state, before) => (
+        state.items.filter(item => item < before).length
+      ),
     },
-  },
-});
+    reducer: {
+      addItem(state, { item }) {
+        return state.set('items', state.items.concat([ item ]));
+      },
+      'otherModule/setName': (state, { name }) => {
+        return state.set('name', name);
+      },
+    },
+  });
 
-test('createNode prefixes action types with node id', function (t) {
-  const node = createTestNode();
-  t.equal(node.actionTypes.addItem, 'test/addItem');
+  leaf.setNamespace('test');
+  return leaf;
+};
+
+test('createLeaf prefixes action types with leaf id', function (t) {
+  const leaf = createTestLeaf();
+  t.equal(leaf.actionTypes.addItem, 'test/addItem');
   t.end();
 });
 
-test('createNode reducer functions correctly', function(t) {
-  const node = createTestNode();
-  const state = node.reducer(
+test('createLeaf reducer functions correctly', function(t) {
+  const leaf = createTestLeaf();
+  const state = leaf.reducer(
     Immutable({ items: [] }),
     { type: 'test/addItem', item: 'foobar' }
   );
   t.equal(state.items.length, 1, 'items list has correct number of items');
   t.equal(state.items[0], 'foobar', 'item list has correct item');
 
-  const state2 = node.reducer(
+  const state2 = leaf.reducer(
     state,
     { type: 'otherModule/setName', name: 'Hessu' }
   );
@@ -63,8 +68,8 @@ test('createNode reducer functions correctly', function(t) {
 });
 
 test('state stays immutable', function(t) {
-  const node = createTestNode();
-  const state = node.reducer(
+  const leaf = createTestLeaf();
+  const state = leaf.reducer(
     Immutable({ items: [] }),
     { type: 'test/addItem', item: 'foobar' }
   );
@@ -78,8 +83,8 @@ test('state stays immutable', function(t) {
 });
 
 test('boolean defines a very simple action creator', function(t) {
-  const node = createTestNode();
-  const action = node.actions.toggle();
+  const leaf = createTestLeaf();
+  const action = leaf.actions.toggle();
   t.deepEqual(
     action,
     { type: 'test/toggle' },
@@ -89,8 +94,8 @@ test('boolean defines a very simple action creator', function(t) {
 });
 
 test('string defines a very simple action creator', function(t) {
-  const node = createTestNode();
-  const action = node.actions.trigger('happy');
+  const leaf = createTestLeaf();
+  const action = leaf.actions.trigger('happy');
   t.deepEqual(
     action,
     { type: 'test/trigger', value: 'happy' },
@@ -100,8 +105,8 @@ test('string defines a very simple action creator', function(t) {
 });
 
 test('array defines a simple action creator with arguments', function(t) {
-  const node = createTestNode();
-  const action = node.actions.addItem('trumpet');
+  const leaf = createTestLeaf();
+  const action = leaf.actions.addItem('trumpet');
   t.deepEqual(
     action,
     { type: 'test/addItem', item: 'trumpet' },
@@ -111,14 +116,14 @@ test('array defines a simple action creator with arguments', function(t) {
 });
 
 test('object defines a simple action creator with fixed payload', function(t) {
-  const node = createTestNode();
-  const action = node.actions.touch();
+  const leaf = createTestLeaf();
+  const action = leaf.actions.touch();
   t.deepEqual(
     action,
     { type: 'test/touch', time: 'hammer' },
     'simple action created'
   );
-  const action2 = node.actions.turnOn();
+  const action2 = leaf.actions.turnOn();
   t.deepEqual(
     action2,
     { type: 'test/turn', value: true },
@@ -128,8 +133,8 @@ test('object defines a simple action creator with fixed payload', function(t) {
 });
 
 test('function action creator is served with wrapped dispatcher', function(t) {
-  const node = createTestNode();
-  const action = node.actions.fetchItem();
+  const leaf = createTestLeaf();
+  const action = leaf.actions.fetchItem();
   const expectations = [
     { type: 'test/fetchItem' },
     { type: 'test/addItem', item: 'fetched' },
@@ -144,14 +149,14 @@ test('function action creator is served with wrapped dispatcher', function(t) {
 });
 
 test('selector uses namespace to select correct branch of state', function(t) {
-  const node = createTestNode();
+  const leaf = createTestLeaf();
   const state = {
     test: {
       items: [1, 2, 3],
     },
   };
 
-  t.equal(node.selectors.itemCount(state), 3);
-  t.equal(node.selectors.itemsBefore(state, 3), 2);
+  t.equal(leaf.selectors.itemCount(state), 3);
+  t.equal(leaf.selectors.itemsBefore(state, 3), 2);
   t.end();
 });

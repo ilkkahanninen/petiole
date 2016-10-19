@@ -18,6 +18,7 @@
   "author": "Ilkka Hänninen",
   "license": "MIT",
   "dependencies": {
+    "lodash.get": "^4.4.2",
     "lodash.mapkeys": "^4.6.0",
     "lodash.mapvalues": "^4.6.0",
     "lodash.zipobject": "^4.1.3",
