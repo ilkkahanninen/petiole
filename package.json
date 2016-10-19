@@ -1,0 +1,22 @@
+{
+  "name": "produx-monorepo",
+  "version": "0.1.0",
+  "description": "Monorepo for Produx library family",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "state",
+    "redux",
+    "promise",
+    "thunk"
+  ],
+  "author": "Ilkka Hänninen",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^3.8.1",
+    "lerna": "prerelease"
+  },
+  "dependencies": {}
+}
