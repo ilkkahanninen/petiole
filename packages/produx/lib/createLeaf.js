@@ -134,6 +134,9 @@ function createLeaf({
     )
   );
 
+  // Utility to get state branch associated to this leaf
+  leaf.select = state => get(state, namespaceArray);
+
   return leaf;
 }
 

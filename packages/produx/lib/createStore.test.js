@@ -39,7 +39,8 @@ test('building a tree works', function(t) {
   store.dispatch(dinnerTable.actions.addChair('B'));
 
   t.deepEqual(store.getState().kitchen.dinnerTable, { chairs: ['A', 'B'], isSetUp: false });
-  t.equal(dinnerTable.selectors.chairCount(store.getState()), 2, 'Selector works')
+  t.equal(dinnerTable.selectors.chairCount(store.getState()), 2, 'Selector works');
+  t.deepEqual(users.select(store.getState()), { list: ['John', 'Mary'] }, 'select() works');
 
   t.end();
 });
