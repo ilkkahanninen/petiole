@@ -8,7 +8,7 @@ function buildTree(structure, path = '') {
       if (node.namespace) {
         throw new Error(`A leaf (${node.namespace}) can be added only to one tree`);
       }
-      node.setNamespace(thisPath);
+      node.__leafWillMountTo(thisPath);
       return node;
     }
     return buildTree(node, thisPath);
@@ -21,7 +21,7 @@ function extractReducers(tree) {
       tree,
       node => (
         node.__isLeaf
-          ? node.reducer
+          ? (node.__leafDidMount(), node.reducer)
           : extractReducers(node)
       )
     )

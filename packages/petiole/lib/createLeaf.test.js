@@ -39,7 +39,9 @@ const createTestLeaf = () => {
     },
   });
 
-  leaf.setNamespace('test');
+  // These methods are normally called when user runs combineTree()
+  leaf.__leafWillMountTo('test');
+  leaf.__leafDidMount();
   return leaf;
 };
 

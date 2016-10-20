@@ -44,3 +44,34 @@ test('building a tree works', function(t) {
 
   t.end();
 });
+
+test('cross-linking actions between leaves works', function(t) {
+  const leafA = createLeaf({
+    actions: {
+      trigger: true,
+    },
+  });
+
+  const leafB = createLeaf({
+    initialState: {
+      value: false,
+    },
+    reducer: {
+      '/externalTrigger': [
+        () => leafA.actionTypes.trigger,
+        state => state.set('value', true),
+      ],
+    },
+  });
+
+  const tree = combineTree({
+    a: leafA,
+    b: leafB,
+  });
+  const store = createStore(tree);
+
+  store.dispatch(leafA.actions.trigger());
+  t.deepEqual(store.getState(), {a: {}, b: {value: true}}, 'triggering an action in leaf A caused a mutation in leaf B');
+
+  t.end();
+});

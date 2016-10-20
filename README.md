@@ -76,3 +76,40 @@ users.selectors.userCount(store.getState()); // => 1
 // Getting action type constants
 users.actionTypes; // => { fetch: 'users/fetch', receive: 'users/receive', etc... }
 ```
+
+```
+// Listening to action types of another leaf
+
+const leafA = createLeaf({
+    actions: {
+        trigger: true,
+    },
+});
+
+const leafB = createLeaf({
+    initialState: {
+        value: false,
+    },
+    reducer: {
+        // This name will be replaced so it can be anything as long it contains /.
+        // It is a recommended convention to use format leafName/actionType.
+        // Notice: value is a tuple [function, function]
+        'leafA/trigger': [
+            // Function which resolves the action type name
+            () => leafA.actionTypes.trigger,
+            // The actual method
+            state => state.set('value', true),
+        ],
+    },
+});
+
+const tree = combineTree({
+    a: leafA,
+    b: leafB,
+});
+
+const store = createStore(tree);
+
+store.dispatch(leafA.actions.trigger());
+store.getState(); // => { a: {}, b: { value: true } }
+```

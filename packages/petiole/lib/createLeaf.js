@@ -17,23 +17,41 @@ function createLeaf({
 
   const leaf = {
     __isLeaf: true,
-    setNamespace(name) {
-      namespace = name;
-      namespaceArray = name.split('/');
 
-      // Map prefixed action type names to reducer functions
-      reducerFuncs = mapKeys(reducer, (func, name) => actionName(name));
+    /*
+     */
+    __leafWillMountTo(position) {
+      namespace = position;
+      namespaceArray = position.split('/');
 
       // Prefix action types with leaf namespace
       const typeNames = Object.keys(actions)
         .concat(Object.keys(reducer))
         .concat(actionTypes)
         .filter(name => name.indexOf('/') < 0);
+
       leaf.actionTypes = zipObject(
         typeNames,
         typeNames.map(actionName)
       );
+
+      delete this.__leafWillMountTo;
     },
+
+    /*
+     */
+    __leafDidMount() {
+      // Map prefixed action type names to reducer functions
+      reducerFuncs = mapValues(
+        mapKeys(reducer, (func, name) => (
+          Array.isArray(func)
+            ? func[0].call()
+           : actionName(name)
+        )),
+        (func) => (Array.isArray(func) ? func[1] : func)
+      );
+      delete this.__leafDidMount;
+    }
   };
 
   // Helper utils
@@ -52,7 +70,6 @@ function createLeaf({
       }
     )
   );
-
 
   // Create main reducer function
   leaf.reducer = (state = Immutable(initialState), action) => {
