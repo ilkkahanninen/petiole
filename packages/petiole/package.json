@@ -1,5 +1,5 @@
 {
-  "name": "produx-monorepo",
+  "name": "petiole",
   "version": "0.1.0",
   "description": "State management built on Redux",
   "main": "index.js",
