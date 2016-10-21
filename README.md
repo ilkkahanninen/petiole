@@ -18,9 +18,22 @@ This library experimental proof-of-concept and it is still in very early status.
 
 ## Example
 
+Create Petiole instance:
+
+```javascript
+// petiole.js
+
+import petiole from 'petiole';
+import thunk from 'petiole-thunk';
+
+export default petiole(thunk);
+```
+
+Create one leaf to the store:
+
 ```javascript
 // users.js
-import { createLeaf } from 'petiole';
+import { createLeaf } from './petiole';
 
 export default const users = createLeaf({
     initialState: {
@@ -49,9 +62,11 @@ export default const users = createLeaf({
 })
 ```
 
+Build a tree and create a store:
+
 ```javascript
 // store.js
-import { combineTree, createStore } from 'petiole';
+import { combineTree, createStore } from './petiole';
 import users from './users';
 
 const tree = combineTree({
@@ -60,6 +75,8 @@ const tree = combineTree({
 
 export default const store = createStore(tree);
 ```
+
+Use them together:
 
 ```javascript
 // Usage
@@ -79,6 +96,8 @@ users.selectors.userCount(store.getState()); // => 1
 users.actionTypes; // => { fetch: 'users/fetch', receive: 'users/receive', etc... }
 ```
 
+Example of communication between leaves:
+
 ```javascript
 // Listening to action types of another leaf
 
@@ -95,7 +114,8 @@ const leafB = createLeaf({
     reducer: {
         // This name will be replaced so it can be anything as long it contains /.
         // It is a recommended convention to use format leafName/actionType.
-        // Notice: value is a tuple [function, function]
+        // Notice: value is a tuple of two functions: the first one resolves the
+        // action type name and the second one is the reducer function.
         'leafA/trigger': [
             // Function which resolves the action type name
             () => leafA.actionTypes.trigger,
