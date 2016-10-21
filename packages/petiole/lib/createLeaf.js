@@ -6,6 +6,10 @@ const get = require('lodash.get');
 const memoize = require('./memoize');
 const builtInActionCreatorBuilders = require('./actionCreatorBuilders');
 
+const createContext = memoize((actions, dispatch) => (
+  mapValues(actions, action => (...args) => dispatch(action(...args)))
+));
+
 function createCreateLeaf(plugins = []) {
 
   const actionCreatorBuilders = builtInActionCreatorBuilders.concat(
@@ -63,21 +67,11 @@ function createCreateLeaf(plugins = []) {
       }
     };
 
-    // Helper utils
+    // Resolve action type for given name
     const getActionType = name => (
       name.indexOf('/') < 0
         ? `${namespace}/${name}`
         : name
-    );
-
-    const ensureActionType = (action, type) => Immutable(
-      Object.assign(
-        {},
-        action,
-        {
-          type: action.type ? getActionType(action.type) : type,
-        }
-      )
     );
 
     // Create main reducer function
@@ -99,7 +93,7 @@ function createCreateLeaf(plugins = []) {
             creatorValue,
             creatorName,
             getActionType,
-            leaf.actions
+            dispatch => createContext(leaf.actions, dispatch)
           );
           if (creator) {
             return creator;

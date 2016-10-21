@@ -32,8 +32,8 @@ export default const users = createLeaf({
         fetch: () => dispatch => {
             dispatch(); // dispatches { type: 'users/fetch' }
             ClientAPI.fetchUsers()
-                .then(names => dispatch(this.receive(names))
-                .catch(() => dispatch(this.fetchError()));
+                .then(this.receive)
+                .catch(this.fetchError);
         },
         receive: 'names', // shortcut for (names) => ({ type: 'users/names', names })
         fetchError: true, // shortcut for () => ({ type: 'users/fetchError' })
@@ -79,7 +79,7 @@ users.selectors.userCount(store.getState()); // => 1
 users.actionTypes; // => { fetch: 'users/fetch', receive: 'users/receive', etc... }
 ```
 
-```
+```javascript
 // Listening to action types of another leaf
 
 const leafA = createLeaf({

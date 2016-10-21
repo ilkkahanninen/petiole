@@ -14,7 +14,7 @@ test('plugin works', function(t) {
       run() {
         return function(dispatch) {
           dispatch();
-          setImmediate(() => dispatch(this.ready()));
+          setImmediate(this.ready);
         };
       },
       ready: true,

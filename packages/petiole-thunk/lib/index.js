@@ -10,12 +10,12 @@ function ensureActionType (action, type, getActionType) {
   );
 }
 
-function buildActionCreatorFromFunction(fn, name, getActionType, callContext) {
+function buildActionCreatorFromFunction(fn, name, getActionType, createContext) {
   if (typeof fn === 'function') {
     return (...args) => {
       return (dispatch, ...other) => {
         return fn(...args).call(
-          callContext,
+          createContext(dispatch),
           action => {
             if (!action) {
               return dispatch({ type: getActionType(name) });
