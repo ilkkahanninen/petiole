@@ -17,6 +17,15 @@
   ],
   "author": "Ilkka Hänninen",
   "license": "MIT",
+  "homepage": "https://github.com/ilkkahanninen/petiole",
+  "bugs": {
+    "url": "https://github.com/ilkkahanninen/petiole/issues",
+    "email": "ilkka.hanninen@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilkkahanninen/petiole.git"
+  },
   "dependencies": {
     "lodash.get": "^4.4.2",
     "lodash.mapkeys": "^4.6.0",
