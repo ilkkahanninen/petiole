@@ -31,10 +31,12 @@ export default const users = createLeaf({
     actions: {
         fetch: () => dispatch => {
             dispatch(); // dispatches { type: 'users/fetch' }
-            MyBackendAPI.fetchUsers()
-                .then(names => dispatch({ type: 'receive', names })
-                .catch(() => dispatch('fetchError'));
+            ClientAPI.fetchUsers()
+                .then(names => dispatch(this.receive(names))
+                .catch(() => dispatch(this.fetchError()));
         },
+        receive: 'names', // shortcut for (names) => ({ type: 'users/names', names })
+        fetchError: true, // shortcut for () => ({ type: 'users/fetchError' })
     },
     selectors: {
         userCount: state => state.names.length,
