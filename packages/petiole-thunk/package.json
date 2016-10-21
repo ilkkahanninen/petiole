@@ -1,0 +1,24 @@
+{
+  "name": "petiole-thunk",
+  "version": "0.1.0",
+  "description": "Thunk plugin for Petiole",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "tape lib/*.test.js | tap-spec"
+  },
+  "keywords": [
+    "petiole",
+    "thunk",
+    "middleware"
+  ],
+  "author": "Ilkka Hänninen",
+  "license": "MIT",
+  "dependencies": {
+    "redux-thunk": "^2.1.0"
+  },
+  "devDependencies": {
+    "petiole": "*",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.2"
+  }
+}

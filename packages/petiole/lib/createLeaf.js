@@ -4,157 +4,127 @@ const mapValues = require('lodash.mapvalues');
 const zipObject = require('lodash.zipobject');
 const get = require('lodash.get');
 const memoize = require('./memoize');
+const builtInActionCreatorBuilders = require('./actionCreatorBuilders');
 
-function createLeaf({
-  initialState = {},
-  actions = {},
-  selectors = {},
-  reducer = {},
-  actionTypes = [],
-}) {
+function createCreateLeaf(plugins = []) {
 
-  let namespace, namespaceArray, reducerFuncs;
-
-  const leaf = {
-    __isLeaf: true,
-
-    /*
-     */
-    __leafWillMountTo(position) {
-      namespace = position;
-      namespaceArray = position.split('/');
-
-      // Prefix action types with leaf namespace
-      const typeNames = Object.keys(actions)
-        .concat(Object.keys(reducer))
-        .concat(actionTypes)
-        .filter(name => name.indexOf('/') < 0);
-
-      leaf.actionTypes = zipObject(
-        typeNames,
-        typeNames.map(actionName)
-      );
-
-      delete this.__leafWillMountTo;
-    },
-
-    /*
-     */
-    __leafDidMount() {
-      // Map prefixed action type names to reducer functions
-      reducerFuncs = mapValues(
-        mapKeys(reducer, (func, name) => (
-          Array.isArray(func)
-            ? func[0].call()
-           : actionName(name)
-        )),
-        (func) => (Array.isArray(func) ? func[1] : func)
-      );
-      delete this.__leafDidMount;
-    }
-  };
-
-  // Helper utils
-  const actionName = name => (
-    name.indexOf('/') < 0
-      ? `${namespace}/${name}`
-      : name
+  const actionCreatorBuilders = builtInActionCreatorBuilders.concat(
+    plugins
+      .map(plugin => plugin.actionCreatorBuilder)
+      .filter(fn => typeof fn === 'function')
   );
 
-  const ensureActionType = (action, type) => Immutable(
-    Object.assign(
-      {},
-      action,
-      {
-        type: action.type ? actionName(action.type) : type,
+  return function createLeaf({
+    initialState = {},
+    actions = {},
+    selectors = {},
+    reducer = {},
+    actionTypes = [],
+  }) {
+
+    let namespace, namespaceArray, reducerFuncs;
+
+    const leaf = {
+      __isLeaf: true,
+
+      /*
+      */
+      __leafWillMountTo(position) {
+        namespace = position;
+        namespaceArray = position.split('/');
+
+        // Prefix action types with leaf namespace
+        const typeNames = Object.keys(actions)
+          .concat(Object.keys(reducer))
+          .concat(actionTypes)
+          .filter(name => name.indexOf('/') < 0);
+
+        leaf.actionTypes = zipObject(
+          typeNames,
+          typeNames.map(getActionType)
+        );
+
+        delete this.__leafWillMountTo;
+      },
+
+      /*
+      */
+      __leafDidMount() {
+        // Map prefixed action type names to reducer functions
+        reducerFuncs = mapValues(
+          mapKeys(reducer, (func, name) => (
+            Array.isArray(func)
+              ? func[0].call()
+            : getActionType(name)
+          )),
+          (func) => (Array.isArray(func) ? func[1] : func)
+        );
+        delete this.__leafDidMount;
       }
-    )
-  );
+    };
 
-  // Create main reducer function
-  leaf.reducer = (state = Immutable(initialState), action) => {
-    const { type } = action;
-    if (reducerFuncs[type]) {
-      return reducerFuncs[type].call(null, state, action);
-    }
-    return state;
-  };
+    // Helper utils
+    const getActionType = name => (
+      name.indexOf('/') < 0
+        ? `${namespace}/${name}`
+        : name
+    );
 
-  // Create action creators
-  leaf.actions = mapValues(
-    actions,
-    (actionCreator, name) => {
-      // Boolean -> simple action creators
-      if (typeof actionCreator === 'boolean') {
-        return () => Immutable({ type: actionName(name) });
-      }
-
-      // Strings -> simple action creatos with one argument
-      if (typeof actionCreator === 'string') {
-        return arg => Immutable({
-          type: actionName(name),
-          [actionCreator]: arg,
-        });
-      }
-
-      // Arrays -> simple action creators with multiple arguments
-      if (Array.isArray(actionCreator)) {
-        return (...args) => Immutable(actionCreator.reduce(
-          (result, key, index) => Object.assign(
-            result,
-            { [key]: args[index] }
-          ),
-          { type: actionName(name) }
-        ));
-      }
-
-      // Objects -> simplea action creator with fixed payload
-      if (typeof actionCreator === 'object') {
-        return () => ensureActionType(actionCreator, actionName(name));
-      }
-
-      // Functions -> assume redux-thunk, wrap with custom dispatcher
-      if (typeof actionCreator === 'function') {
-        return (...args) => {
-          return (dispatch, ...other) => {
-            return actionCreator(...args).call(
-              leaf.actions,
-              action => {
-                if (!action) {
-                  return dispatch({ type: actionName(name) });
-                }
-                return typeof action === 'string'
-                  ? dispatch({ type: actionName(action) })
-                  : dispatch(ensureActionType(action, actionName(name)));
-              },
-              ...other
-            );
-          };
-        };
-      }
-
-      // TODO: Promises
-
-
-      return actionCreator;
-    }
-  );
-
-  // Map selectors
-  leaf.selectors = mapValues(
-    selectors,
-    selector => memoize(
-      (state, ...rest) => selector(
-        get(state, namespaceArray),
-        ...rest
+    const ensureActionType = (action, type) => Immutable(
+      Object.assign(
+        {},
+        action,
+        {
+          type: action.type ? getActionType(action.type) : type,
+        }
       )
-    )
-  );
+    );
 
-  // Utility to get state branch associated to this leaf
-  leaf.select = state => get(state, namespaceArray);
+    // Create main reducer function
+    leaf.reducer = (state = Immutable(initialState), action) => {
+      const { type } = action;
+      if (reducerFuncs[type]) {
+        return reducerFuncs[type].call(null, state, action);
+      }
+      return state;
+    };
 
-  return leaf;
+    // Create action creators
+    leaf.actions = {};
+    Object.assign(leaf.actions, mapValues(
+      actions,
+      (creatorValue, creatorName) => {
+        for (let i = 0; i < actionCreatorBuilders.length; i++) {
+          const creator = actionCreatorBuilders[i](
+            creatorValue,
+            creatorName,
+            getActionType,
+            leaf.actions
+          );
+          if (creator) {
+            return creator;
+          }
+        }
+        return creatorValue;
+      }
+    ));
+
+    // Map selectors
+    leaf.selectors = mapValues(
+      selectors,
+      selector => memoize(
+        (state, ...rest) => selector(
+          get(state, namespaceArray),
+          ...rest
+        )
+      )
+    );
+
+    // Utility to get state branch associated to this leaf
+    leaf.select = state => get(state, namespaceArray);
+
+    return leaf;
+  };
 }
 
-module.exports = createLeaf;
+module.exports = createCreateLeaf;

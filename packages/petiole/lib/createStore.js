@@ -1,21 +1,21 @@
 
 const { createStore, applyMiddleware } = require('redux');
-const thunk = require('redux-thunk').default;
+const isFunction = fn => typeof fn === 'function';
 
-const defaultEnhancers = () => {
-  const enhancers = [
-    thunk,
-  ];
-  if ((typeof window !== 'undefined') && window.devToolsExtension) {
-    enhancers.push(window.devToolsExtension());
-  }
-  return enhancers;
-};
+module.exports = function createCreateStore(plugins = []) {
+  return function createReduxStore(tree, options = {}) {
+    const {
+      preloadedState = {},
+    } = options;
 
-module.exports = (tree, preloadedState = {}, enhancers = defaultEnhancers()) => {
-  return createStore(
-    tree.reducer,
-    preloadedState,
-    applyMiddleware.apply(null, enhancers)
-  );
+    const middleware = plugins
+      .map(plugin => plugin.reduxMiddleware ? plugin.reduxMiddleware : plugin)
+      .filter(isFunction);
+
+    return createStore(
+      tree.reducer,
+      preloadedState,
+      applyMiddleware.apply(null, middleware)
+    );
+  };
 };

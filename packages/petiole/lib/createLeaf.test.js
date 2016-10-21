@@ -1,6 +1,6 @@
 const test = require('tape');
 const Immutable = require('seamless-immutable');
-const createLeaf = require('./createLeaf');
+const createLeaf = require('./createLeaf')();
 
 const createTestLeaf = () => {
   const leaf = createLeaf({
@@ -15,13 +15,6 @@ const createTestLeaf = () => {
       turnOn: { type: 'turn', value: true },
       turnOff: { type: 'turn', value: false },
       addItem: ['item'],
-      fetchItem: () => function(dispatch) {
-        dispatch();
-        setImmediate(() => {
-          dispatch(this.addItem('fetched'));
-          setImmediate(() => dispatch('ready'));
-        });
-      },
     },
     selectors: {
       itemCount: state => state.items.length,
@@ -132,22 +125,6 @@ test('object defines a simple action creator with fixed payload', function(t) {
     'simple action created'
   );
   t.end();
-});
-
-test('function action creator is served with wrapped dispatcher', function(t) {
-  const leaf = createTestLeaf();
-  const action = leaf.actions.fetchItem();
-  const expectations = [
-    { type: 'test/fetchItem' },
-    { type: 'test/addItem', item: 'fetched' },
-    { type: 'test/ready' },
-  ];
-  t.plan(3);
-  let index = 0;
-  action(action => {
-    t.deepEqual(action, expectations[index]);
-    index++;
-  });
 });
 
 test('selector uses namespace to select correct branch of state', function(t) {
