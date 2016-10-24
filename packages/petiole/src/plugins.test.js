@@ -57,7 +57,7 @@ test('enhancer composition works', function(t) {
   }
 
   const { counter, store } = createTestStore(
-    petiole.enhancer(customEnhancer)
+    petiole.enhancer(customEnhancer())
   );
 
   t.plan(1);

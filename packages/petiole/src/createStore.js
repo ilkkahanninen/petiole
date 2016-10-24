@@ -1,4 +1,4 @@
-const { createStore, applyMiddleware } = require('redux');
+const { createStore, applyMiddleware, compose } = require('redux');
 const { REDUX_MIDDLEWARE, REDUX_ENHANCER } = require('./pluginWrappers');
 
 const isFunction = fn => typeof fn === 'function';
@@ -15,9 +15,9 @@ module.exports = function createCreateStore(plugins = []) {
     const middleware = pickFunctions(plugins, REDUX_MIDDLEWARE);
     const enhancers = pickFunctions(plugins, REDUX_ENHANCER);
 
-    const enhancer = enhancers.reduce(
-      (composition, enhance) => enhance(composition),
-      applyMiddleware(...middleware)
+    const enhancer = compose(
+      applyMiddleware(...middleware),
+      ...enhancers
     );
 
     return createStore(
