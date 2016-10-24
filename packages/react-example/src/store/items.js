@@ -18,7 +18,7 @@ export default declareLeaf({
     itemCount: state => state.list.length,
   },
   reducer: {
-    name(state, { name }) {
+    setName(state, { name }) {
       return state.set('name', name);
     },
     addItem(state, { item }) {

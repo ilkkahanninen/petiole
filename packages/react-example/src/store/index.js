@@ -7,7 +7,4 @@ const tree = createTree({
 
 const store = createStore(tree);
 
-console.log('xxx');
-store.dispatch(items.actions.setName('fdfdsfds'));
-
 export default store;
