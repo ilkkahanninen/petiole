@@ -2,10 +2,10 @@ const test = require('tape');
 const petiole = require('petiole');
 const thunk = require('./index');
 
-const { createLeaf, combineTree, createStore } = petiole(thunk);
+const { declareLeaf, createTree, createStore } = petiole(thunk);
 
 test('plugin works', function(t) {
-  const leaf = createLeaf({
+  const leaf = declareLeaf({
     initialState: {
       run: false,
       ready: false,
@@ -25,7 +25,7 @@ test('plugin works', function(t) {
     },
   });
 
-  const tree = combineTree({ leaf });
+  const tree = createTree({ leaf });
   const store = createStore(tree);
 
   t.plan(2);
