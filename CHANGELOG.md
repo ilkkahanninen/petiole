@@ -1,6 +1,6 @@
 # Petiole change log
 
-## 0.2.2 (2016-10-xx)
+## 0.2.2 (2016-10-24)
 
 * Support for Redux enhancers
 * New functions added:
