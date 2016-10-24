@@ -1,6 +1,6 @@
 {
   "name": "petiole-thunk",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Thunk plugin for Petiole",
   "main": "lib/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
-    "petiole": "^0.1.1",
+    "petiole": "^0.2.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2"
   }
