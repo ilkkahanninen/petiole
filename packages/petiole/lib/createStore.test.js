@@ -1,6 +1,6 @@
 const test = require('tape');
-const createTree = require('./combineTree')();
-const declareLeaf = require('./createLeaf')();
+const createTree = require('./createTree')();
+const declareLeaf = require('./declareLeaf')();
 const createStore = require('./createStore')();
 
 test('building a tree works', function(t) {

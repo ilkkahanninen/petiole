@@ -1,5 +1,5 @@
-const declareLeaf = require('./createLeaf');
-const createTree = require('./combineTree');
+const declareLeaf = require('./declareLeaf');
+const createTree = require('./createTree');
 const createOrphanLeaf = require('./createOrphanLeaf');
 const createStore = require('./createStore');
 

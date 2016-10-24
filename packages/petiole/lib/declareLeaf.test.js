@@ -1,6 +1,6 @@
 const test = require('tape');
 const Immutable = require('seamless-immutable');
-const declareLeaf = require('./createLeaf')();
+const declareLeaf = require('./declareLeaf')();
 const createOrphanLeaf = require('./createOrphanLeaf');
 
 const createTestLeaf = () => {
