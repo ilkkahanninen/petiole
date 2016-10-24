@@ -1,6 +1,6 @@
 {
   "name": "petiole",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "State management built on Redux",
   "main": "lib/index.js",
   "directories": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "tape lib/*.test.js | tap-spec",
-    "build": "babel ./src --out-dir ./lib --ignore test.js"
+    "build": "babel ./src --out-dir ./lib --ignore test.js",
+    "prepublish": "rm -rf lib && npm run build"
   },
   "keywords": [
     "state",
