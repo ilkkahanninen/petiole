@@ -1,16 +1,16 @@
 const test = require('tape');
-const combineTree = require('./combineTree')();
-const createLeaf = require('./createLeaf')();
+const createTree = require('./combineTree')();
+const declareLeaf = require('./createLeaf')();
 const createStore = require('./createStore')();
 
 test('building a tree works', function(t) {
-  const users = createLeaf({
+  const users = declareLeaf({
     initialState: {
       list: ['John', 'Mary']
     },
   });
 
-  const dinnerTable = createLeaf({
+  const dinnerTable = declareLeaf({
     initialState: {
       chairs: [],
       isSetUp: false,
@@ -26,7 +26,7 @@ test('building a tree works', function(t) {
     }
   });
 
-  const tree = combineTree({
+  const tree = createTree({
     users,
     kitchen: {
       dinnerTable,
@@ -46,13 +46,13 @@ test('building a tree works', function(t) {
 });
 
 test('cross-linking actions between leaves works', function(t) {
-  const leafA = createLeaf({
+  const leafA = declareLeaf({
     actions: {
       trigger: true,
     },
   });
 
-  const leafB = createLeaf({
+  const leafB = declareLeaf({
     initialState: {
       value: false,
     },
@@ -64,7 +64,7 @@ test('cross-linking actions between leaves works', function(t) {
     },
   });
 
-  const tree = combineTree({
+  const tree = createTree({
     a: leafA,
     b: leafB,
   });

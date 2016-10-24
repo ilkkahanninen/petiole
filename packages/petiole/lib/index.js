@@ -1,11 +1,13 @@
-const combineTree = require('./combineTree');
-const createLeaf = require('./createLeaf');
+const declareLeaf = require('./createLeaf');
+const createTree = require('./combineTree');
+const createOrphanLeaf = require('./createOrphanLeaf');
 const createStore = require('./createStore');
 
 function initPetiole(...plugins) {
   return {
-    combineTree: combineTree(plugins),
-    createLeaf: createLeaf(plugins),
+    declareLeaf: declareLeaf(plugins),
+    createTree: createTree(plugins),
+    createOrphanLeaf: createOrphanLeaf,
     createStore: createStore(plugins),
   };
 }

@@ -1,10 +1,10 @@
 const test = require('tape');
 const Immutable = require('seamless-immutable');
-const createLeaf = require('./createLeaf')();
+const declareLeaf = require('./createLeaf')();
+const createOrphanLeaf = require('./createOrphanLeaf');
 
 const createTestLeaf = () => {
-  const leaf = createLeaf({
-    namespace: 'test',
+  const leaf = declareLeaf({
     initialState: {
       items: [],
     },
@@ -32,10 +32,7 @@ const createTestLeaf = () => {
     },
   });
 
-  // These methods are normally called when user runs combineTree()
-  leaf.__leafWillMountTo('test');
-  leaf.__leafDidMount();
-  return leaf;
+  return createOrphanLeaf(leaf, 'test');
 };
 
 test('createLeaf prefixes action types with leaf id', function (t) {
