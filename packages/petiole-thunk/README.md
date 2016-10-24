@@ -6,9 +6,9 @@ Thunk plugin for Petiole.
 
 ```javascript
 // users.js
-import { createLeaf } from './petiole';
+import { declareLeaf } from './petiole';
 
-export default const users = createLeaf({
+export default const users = declareLeaf({
     initialState: {
         names: [],
         isLoading: false,

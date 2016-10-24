@@ -31,9 +31,10 @@ This tutorial assumes you are familiar with Redux.
 First you need to create instance of Petiole by calling the function imported from the library. You can pass Petiole plugins and Redux middleware here as arguments.
 
 Petiole() returns following functions:
-* createLeaf()
-* combineTree()
-* createStore()
+* declareLeaf(*leafDeclaration: LeafDeclaration*): *PartialLeaf*
+* createTree(*treeStructure: TreeStructure*): *Tree*
+* createOrphanLeaf(*partialLeaf: PartialLeaf, namespace: string*): *Leaf*
+* createStore(*tree: Tree*): *Store*
 
 ```javascript
 // petiole.js
@@ -46,12 +47,12 @@ export default petiole(thunk);
 
 Petiole embraces the idea of Redux reducer bundles, better known as [ducks](https://github.com/erikras/ducks-modular-redux), but takes them further with uniform construction function and throws support for selectors in. In Petiole these bundles are called **leaves** -- they are the leaf nodes (end-nodes) in our state tree.
 
-Let's create the Hello World of action creator-reducers-bundles: the counter. createLeaf() returns a partially constructed leaf and it needs to be attached to a tree before you can really use it.
+Let's create the Hello World of action creator-reducers-bundles: the counter. declareLeaf() returns a partially constructed leaf and it needs to be attached to a tree before you can really use it.
 
 ```javascript
-import { createLeaf, combineTree } from './petiole';
+import { declareLeaf, createTree } from './petiole';
 
-const counter = createLeaf({
+const counter = declareLeaf({
   initialState: {
     value: 0,
   },
@@ -66,7 +67,7 @@ const counter = createLeaf({
   },
 });
 
-const tree = combineTree({ counter });
+const tree = createTree({ counter });
 ```
 
 Now we have functional action creators and a reducer function.
@@ -91,7 +92,7 @@ You can now access the action creator by calling `counter.actions.increase()` wh
 
 You get the resolved action types from actionTypes object, e.g. `counter.actionTypes.increase`.
 
-**Notice:** combineTree() takes the ownership of the leaf and you can attach a leaf only once. If you want to reuse a leaf you have to reuse the declaration object, not the partially instantiated leaf.
+**Notice:** createTree() takes the ownership of the leaf and you can attach a leaf only once. If you want to reuse a leaf you have to reuse the declaration object, not the partially instantiated leaf.
 
 Ok. We have our action creators but how do access the state and dispatch the actions? Same way as with Redux. First we need to create our store. Use Petiole's own `createStore`:
 
@@ -114,10 +115,10 @@ TODO: Selectors, all action creator shortcuts
 
 ```javascript
 // store.js
-import { combineTree, createStore } from './petiole';
+import { createTree, createStore } from './petiole';
 import users from './users';
 
-const tree = combineTree({
+const tree = createTree({
     users,
 });
 
@@ -149,13 +150,13 @@ Example of communication between leaves:
 ```javascript
 // Listening to action types of another leaf
 
-const leafA = createLeaf({
+const leafA = declareLeaf({
     actions: {
         trigger: true,
     },
 });
 
-const leafB = createLeaf({
+const leafB = declareLeaf({
     initialState: {
         value: false,
     },
@@ -173,7 +174,7 @@ const leafB = createLeaf({
     },
 });
 
-const tree = combineTree({
+const tree = createTree({
     a: leafA,
     b: leafB,
 });
