@@ -5,20 +5,21 @@ const zipObject = require('lodash.zipobject');
 const get = require('lodash.get');
 const memoize = require('./memoize');
 const builtInActionCreatorBuilders = require('./actionCreatorBuilders');
+const { ACTION_CREATOR_BUILDER } = require('./pluginWrappers');
 
 const createContext = memoize((actions, dispatch) => (
   mapValues(actions, action => (...args) => dispatch(action(...args)))
 ));
 
-function createCreateLeaf(plugins = []) {
+function createDeclareLeaf(plugins = []) {
 
   const actionCreatorBuilders = builtInActionCreatorBuilders.concat(
     plugins
-      .map(plugin => plugin.actionCreatorBuilder)
+      .map(plugin => plugin[ACTION_CREATOR_BUILDER])
       .filter(fn => typeof fn === 'function')
   );
 
-  return function createLeaf({
+  return function declareLeaf({
     initialState = {},
     actions = {},
     selectors = {},
@@ -121,4 +122,4 @@ function createCreateLeaf(plugins = []) {
   };
 }
 
-module.exports = createCreateLeaf;
+module.exports = createDeclareLeaf;
