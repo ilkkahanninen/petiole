@@ -4,7 +4,8 @@
   "description": "Thunk plugin for Petiole",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tape lib/*.test.js | tap-spec"
+    "test": "tape lib/*.test.js | tap-spec",
+    "build": "babel ./src --out-dir ./lib --ignore test.js"
   },
   "keywords": [
     "petiole",
@@ -26,6 +27,8 @@
     "redux-thunk": "^2.1.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
     "petiole": "^0.2.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2"
