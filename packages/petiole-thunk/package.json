@@ -1,6 +1,6 @@
 {
   "name": "petiole-thunk",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Thunk plugin for Petiole",
   "main": "lib/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   "devDependencies": {
     "babel-cli": "^6.16.0",
     "babel-preset-es2015": "^6.16.0",
-    "petiole": "^0.2.2",
+    "petiole": "^0.2.3",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2"
   }
