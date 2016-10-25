@@ -20,3 +20,4 @@ Easy and predictable state container for JavaScript apps.
 
 * [petiole](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole/README.md)
 * [petiole-thunk](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-thunk/README.md)
+* [petiole-devtools-extension](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-devtools-extension/README.md)

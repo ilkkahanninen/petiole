@@ -1,5 +1,9 @@
 # Petiole change log
 
+## 0.2.3 (2016-10-25)
+
+* New plugin: petiole-devtools-extension
+
 ## 0.2.2 (2016-10-24)
 
 * Support for Redux enhancers
