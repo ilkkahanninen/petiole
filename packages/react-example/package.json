@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "petiole": "^0.2.2",
+    "petiole-devtools-extension": "^0.2.2",
     "petiole-thunk": "^0.2.2",
     "ramda": "^0.22.1",
     "react": "^15.3.2",
