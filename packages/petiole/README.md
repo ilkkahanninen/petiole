@@ -42,7 +42,18 @@ Petiole() returns following functions:
 import petiole from 'petiole';
 import thunk from 'petiole-thunk';
 
-export default petiole(thunk);
+// Instantiate Petiole with thunk plugin:
+const instance = petiole(thunk);
+
+// ES6 way to export the API:
+export const {
+  declareLeaf,
+  createTree,
+  createStore,
+} = instance;
+
+// CommonJS way:
+module.exports = instance;
 ```
 
 Petiole embraces the idea of Redux reducer bundles, better known as [ducks](https://github.com/erikras/ducks-modular-redux), but takes them further with uniform construction function and throws support for selectors in. In Petiole these bundles are called **leaves** -- they are the leaf nodes (end-nodes) in our state tree.
