@@ -1,5 +1,11 @@
 # Petiole change log
 
+## 0.2.4 (2016-10-31)
+
+* New function: combineLeaflets(*...leaflets*)
+* createStore() accepts also tree structure as an argument
+* declareLeaf() accepts multiple leaflets as arguments and combines them automatically
+
 ## 0.2.3 (2016-10-25)
 
 * New plugin: petiole-devtools-extension
