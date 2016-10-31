@@ -1,53 +1,51 @@
-const Immutable = require('seamless-immutable');
-
 // Boolean -> simple action creators
-function buildFromBool(actionCreator, name, getActionType) {
-  if (typeof actionCreator === 'boolean') {
-    return () => Immutable({ type: getActionType(name) });
+function buildFromBool({ declaration, name, mapActionType }) {
+  if (typeof declaration === 'boolean') {
+    return () => ({ type: mapActionType(name) });
   }
   return null;
 }
 
 // Strings -> simple action creatos with one argument
-function buildFromString(actionCreator, name, getActionType) {
-  if (typeof actionCreator === 'string') {
-    return arg => Immutable({
-      type: getActionType(name),
-      [actionCreator]: arg,
+function buildFromString({ declaration, name, mapActionType }) {
+  if (typeof declaration === 'string') {
+    return arg => ({
+      type: mapActionType(name),
+      [declaration]: arg,
     });
   }
   return null;
 }
 
 // Arrays -> simple action creators with multiple arguments
-function buildFromArray(actionCreator, name, getActionType) {
-  if (Array.isArray(actionCreator)) {
-    return (...args) => Immutable(actionCreator.reduce(
+function buildFromArray({ declaration, name, mapActionType }) {
+  if (Array.isArray(declaration)) {
+    return (...args) => declaration.reduce(
       (result, key, index) => Object.assign(
         result,
         { [key]: args[index] }
       ),
-      { type: getActionType(name) }
-    ));
+      { type: mapActionType(name) }
+    );
   }
   return null;
 }
 
 // Objects -> simplea action creator with fixed payload
-function buildFromObject(actionCreator, name, getActionType) {
-  if (typeof actionCreator === 'object') {
-    return () => ensureActionType(actionCreator, name, getActionType);
+function buildFromObject({ declaration, name, mapActionType }) {
+  if (typeof declaration === 'object') {
+    return () => ensureActionType(declaration, name, mapActionType);
   }
   return null;
 }
 
 // Utils
-function ensureActionType (action, type, getActionType) {
+function ensureActionType(action, type, mapActionType) {
   return Object.assign(
     {},
     action,
     {
-      type: action.type ? getActionType(action.type) : getActionType(type),
+      type: action.type ? mapActionType(action.type) : mapActionType(type),
     }
   );
 }

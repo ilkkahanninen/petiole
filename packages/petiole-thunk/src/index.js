@@ -1,6 +1,6 @@
 const thunk = require('redux-thunk').default;
 
-function ensureActionType (action, type, getActionType) {
+function ensureActionType(action, type, getActionType) {
   return Object.assign(
     {},
     action,
@@ -10,19 +10,24 @@ function ensureActionType (action, type, getActionType) {
   );
 }
 
-function buildActionCreatorFromFunction(fn, name, getActionType, createContext) {
-  if (typeof fn === 'function') {
+function buildActionCreatorFromFunction({
+    declaration,
+    name,
+    mapActionType,
+    createContext,
+  }) {
+  if (typeof declaration === 'function') {
     return (...args) => {
       return (dispatch, ...other) => {
-        return fn(...args).call(
+        return declaration(...args).call(
           createContext(dispatch),
           action => {
             if (!action) {
-              return dispatch({ type: getActionType(name) });
+              return dispatch({ type: mapActionType(name) });
             }
             return typeof action === 'string'
-              ? dispatch({ type: getActionType(action) })
-              : dispatch(ensureActionType(action, name, getActionType));
+              ? dispatch({ type: mapActionType(action) })
+              : dispatch(ensureActionType(action, name, mapActionType));
           },
           ...other
         );

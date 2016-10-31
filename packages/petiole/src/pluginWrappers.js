@@ -1,6 +1,7 @@
 const ACTION_CREATOR_BUILDER = 'actionCreatorBuilder';
 const REDUX_MIDDLEWARE = 'reduxMiddleware';
 const REDUX_ENHANCER = 'reduxEnhancer';
+const IMMUTABLE = 'immutable';
 
 function actionCreatorBuilder(builder) {
   return {
@@ -20,11 +21,23 @@ function enhancer(enhancer) {
   };
 }
 
+function immutable(constructor, immutableTest) {
+  const plugin = {
+    [IMMUTABLE]: constructor,
+  };
+  if (immutableTest) {
+    plugin[IMMUTABLE].isImmutable = immutableTest;
+  }
+  return plugin;
+}
+
 module.exports = {
   actionCreatorBuilder,
   middleware,
   enhancer,
+  immutable,
   ACTION_CREATOR_BUILDER,
   REDUX_MIDDLEWARE,
   REDUX_ENHANCER,
+  IMMUTABLE,
 };

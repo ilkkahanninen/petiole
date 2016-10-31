@@ -3,6 +3,8 @@ const createTree = require('./createTree');
 const declareLeaf = require('./declareLeaf')();
 const createStore = require('./createStore')();
 
+const set = (state, prop, value) => Object.assign({}, state, { [prop]: value });
+
 test('building a tree works', function(t) {
   const users = declareLeaf({
     initialState: {
@@ -19,7 +21,7 @@ test('building a tree works', function(t) {
       addChair: 'name',
     },
     reducer: {
-      addChair: (state, { name }) => state.set('chairs', state.chairs.concat(name)),
+      addChair: (state, { name }) => set(state, 'chairs', state.chairs.concat(name)),
     },
     selectors: {
       chairCount: state => state.chairs.length,
@@ -62,7 +64,7 @@ test('building a store without createTree() works', function(t) {
       addChair: 'name',
     },
     reducer: {
-      addChair: (state, { name }) => state.set('chairs', state.chairs.concat(name)),
+      addChair: (state, { name }) => set(state, 'chairs', state.chairs.concat(name)),
     },
     selectors: {
       chairCount: state => state.chairs.length,
@@ -100,7 +102,7 @@ test('cross-linking actions between leaves works', function(t) {
     reducer: {
       '/externalTrigger': [
         () => leafA.actionTypes.trigger,
-        state => state.set('value', true),
+        state => set(state, 'value', true),
       ],
     },
   });

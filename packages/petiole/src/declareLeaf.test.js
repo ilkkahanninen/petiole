@@ -1,7 +1,8 @@
 const test = require('tape');
-const Immutable = require('seamless-immutable');
 const declareLeaf = require('./declareLeaf')();
 const createOrphanLeaf = require('./createOrphanLeaf');
+
+const set = (state, prop, value) => Object.assign({}, state, { [prop]: value });
 
 const createTestLeaf = () => {
   const leaf = declareLeaf({
@@ -24,11 +25,9 @@ const createTestLeaf = () => {
     },
     reducer: {
       addItem(state, { item }) {
-        return state.set('items', state.items.concat([ item ]));
+        return set(state, 'items', state.items.concat([ item ]));
       },
-      'otherModule/setName': (state, { name }) => {
-        return state.set('name', name);
-      },
+      'otherModule/setName': (state, { name }) => set(state, 'name', name),
     },
   });
 
@@ -44,7 +43,7 @@ test('createLeaf prefixes action types with leaf id', function (t) {
 test('createLeaf reducer functions correctly', function(t) {
   const leaf = createTestLeaf();
   const state = leaf.reducer(
-    Immutable({ items: [] }),
+    { items: [] },
     { type: 'test/addItem', item: 'foobar' }
   );
   t.equal(state.items.length, 1, 'items list has correct number of items');
@@ -59,20 +58,20 @@ test('createLeaf reducer functions correctly', function(t) {
   t.end();
 });
 
-test('state stays immutable', function(t) {
-  const leaf = createTestLeaf();
-  const state = leaf.reducer(
-    Immutable({ items: [] }),
-    { type: 'test/addItem', item: 'foobar' }
-  );
-  state.foo = 'bar';
-  t.equal(state.foo, undefined, 'assigned property to an immutable object does not exists');
-  t.throws(
-    () => state.items.push('xxx'),
-    'immutable array cannot be mutated'
-  );
-  t.end();
-});
+// test('state stays immutable', function(t) {
+//   const leaf = createTestLeaf();
+//   const state = leaf.reducer(
+//     { items: [] },
+//     { type: 'test/addItem', item: 'foobar' }
+//   );
+//   state.foo = 'bar';
+//   t.equal(state.foo, undefined, 'assigned property to an immutable object does not exists');
+//   t.throws(
+//     () => state.items.push('xxx'),
+//     'immutable array cannot be mutated'
+//   );
+//   t.end();
+// });
 
 test('boolean defines a very simple action creator', function(t) {
   const leaf = createTestLeaf();

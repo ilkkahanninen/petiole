@@ -1,4 +1,3 @@
-const Immutable = require('seamless-immutable');
 const mapKeys = require('lodash.mapkeys');
 const mapValues = require('lodash.mapvalues');
 const zipObject = require('lodash.zipobject');
@@ -8,12 +7,15 @@ const builtInActionCreatorBuilders = require('./actionCreatorBuilders');
 const { ACTION_CREATOR_BUILDER } = require('./pluginWrappers');
 const definePrivateProperty = require('./definePrivateProperty');
 const combineLeaflets = require('./combineLeaflets');
+const createImmutableConstructor = require('./createImmutableConstructor');
 
 const createContext = memoize((actions, dispatch) => (
   mapValues(actions, action => (...args) => dispatch(action(...args)))
 ));
 
 function createDeclareLeaf(plugins = []) {
+
+  const immutable = createImmutableConstructor(plugins);
 
   const actionCreatorBuilders = builtInActionCreatorBuilders.concat(
     plugins
@@ -46,7 +48,7 @@ function createDeclareLeaf(plugins = []) {
 
       leaf.actionTypes = zipObject(
         typeNames,
-        typeNames.map(getActionType)
+        typeNames.map(mapActionType)
       );
 
       delete this.__leafWillMountTo;
@@ -57,7 +59,7 @@ function createDeclareLeaf(plugins = []) {
         mapKeys(reducer, (func, name) => (
           Array.isArray(func)
             ? func[0].call()
-          : getActionType(name)
+          : mapActionType(name)
         )),
         (func) => (Array.isArray(func) ? func[1] : func)
       );
@@ -65,17 +67,20 @@ function createDeclareLeaf(plugins = []) {
     });
 
     // Resolve action type for given name
-    const getActionType = name => (
+    const mapActionType = name => (
       name.indexOf('/') < 0
         ? `${namespace}/${name}`
         : name
     );
 
     // Create main reducer function
-    leaf.reducer = (state = Immutable(initialState), action) => {
+    leaf.reducer = (state = immutable(initialState), action) => {
       const { type } = action;
       if (reducerFuncs[type]) {
-        return reducerFuncs[type].call(null, state, action);
+        const result = reducerFuncs[type].call(null, state, action);
+        return (result !== state && !immutable.isImmutable(result))
+          ? immutable(result)
+          : result;
       }
       return state;
     };
@@ -84,19 +89,19 @@ function createDeclareLeaf(plugins = []) {
     leaf.actions = {};
     Object.assign(leaf.actions, mapValues(
       actions,
-      (creatorValue, creatorName) => {
+      (declaration, name) => {
         for (let i = 0; i < actionCreatorBuilders.length; i++) {
-          const creator = actionCreatorBuilders[i](
-            creatorValue,
-            creatorName,
-            getActionType,
-            dispatch => createContext(leaf.actions, dispatch)
-          );
+          const creator = actionCreatorBuilders[i]({
+            declaration,
+            name,
+            mapActionType,
+            createContext: dispatch => createContext(leaf.actions, dispatch),
+          });
           if (creator) {
             return creator;
           }
         }
-        return creatorValue;
+        throw new Error(`Could not init action creator ${name}`);
       }
     ));
 

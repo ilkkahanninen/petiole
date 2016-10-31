@@ -1,6 +1,8 @@
 const test = require('tape');
 const petiole = require('./index');
 
+const set = (state, prop, value) => Object.assign({}, state, { [prop]: value });
+
 function createTestStore(...plugins) {
   const instance = petiole(...plugins);
   const counter = instance.declareLeaf({
@@ -11,7 +13,7 @@ function createTestStore(...plugins) {
       increase: true,
     },
     reducer: {
-      increase: state => state.set('value', state.value + 1),
+      increase: state => set(state, 'value', state.value + 1),
     }
   });
   const tree = instance.createTree({
