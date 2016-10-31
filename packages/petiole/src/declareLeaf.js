@@ -7,6 +7,7 @@ const memoize = require('./memoize');
 const builtInActionCreatorBuilders = require('./actionCreatorBuilders');
 const { ACTION_CREATOR_BUILDER } = require('./pluginWrappers');
 const definePrivateProperty = require('./definePrivateProperty');
+const combineLeaflets = require('./combineLeaflets');
 
 const createContext = memoize((actions, dispatch) => (
   mapValues(actions, action => (...args) => dispatch(action(...args)))
@@ -20,13 +21,14 @@ function createDeclareLeaf(plugins = []) {
       .filter(fn => typeof fn === 'function')
   );
 
-  return function declareLeaf({
-    initialState = {},
-    actions = {},
-    selectors = {},
-    reducer = {},
-    actionTypes = [],
-  }) {
+  return function declareLeaf(...leaflets) {
+    const {
+      initialState,
+      actions,
+      selectors,
+      reducer,
+      actionTypes,
+    } = combineLeaflets(...leaflets);
 
     let namespace, namespaceArray, reducerFuncs;
 

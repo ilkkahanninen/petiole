@@ -136,3 +136,14 @@ test('selector uses namespace to select correct branch of state', function(t) {
   t.equal(leaf.selectors.itemsBefore(state, 3), 2);
   t.end();
 });
+
+test('passing multiple leaflets to declareLeaf automatically combines them', function(t) {
+  const partialLeaf = declareLeaf(
+    { actionTypes: ['foo'] },
+    { actionTypes: ['bar'] }
+  );
+  const leaf = createOrphanLeaf(partialLeaf, 'test');
+  t.equal(leaf.actionTypes.foo, 'test/foo');
+  t.equal(leaf.actionTypes.bar, 'test/bar');
+  t.end();
+});
