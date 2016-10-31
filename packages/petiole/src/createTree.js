@@ -1,5 +1,6 @@
 const mapValues = require('lodash.mapvalues');
 const { combineReducers } = require('redux');
+const definePrivateProperty = require('./definePrivateProperty');
 
 function buildTree(structure, path = '') {
   return mapValues(structure, (node, name) => {
@@ -28,12 +29,14 @@ function extractReducers(tree) {
   );
 }
 
-module.exports = function createCombineTre(/* plugins = [] */) {
+module.exports = function createCombineTree(/* plugins = [] */) {
   return function combineTree(structure) {
     const tree = buildTree(structure);
     const reducer = extractReducers(tree);
-    return {
+    const result = {
       reducer,
     };
+    definePrivateProperty(result, '__isTree');
+    return result;
   };
 };

@@ -6,6 +6,7 @@ const get = require('lodash.get');
 const memoize = require('./memoize');
 const builtInActionCreatorBuilders = require('./actionCreatorBuilders');
 const { ACTION_CREATOR_BUILDER } = require('./pluginWrappers');
+const definePrivateProperty = require('./definePrivateProperty');
 
 const createContext = memoize((actions, dispatch) => (
   mapValues(actions, action => (...args) => dispatch(action(...args)))
@@ -29,44 +30,37 @@ function createDeclareLeaf(plugins = []) {
 
     let namespace, namespaceArray, reducerFuncs;
 
-    const leaf = {
-      __isLeaf: true,
+    const leaf = {};
+    definePrivateProperty(leaf, '__isLeaf');
+    definePrivateProperty(leaf, '__leafWillMountTo', function leafWillMountTo(position) {
+      namespace = position;
+      namespaceArray = position.split('/');
 
-      /*
-      */
-      __leafWillMountTo(position) {
-        namespace = position;
-        namespaceArray = position.split('/');
+      // Prefix action types with leaf namespace
+      const typeNames = Object.keys(actions)
+        .concat(Object.keys(reducer))
+        .concat(actionTypes)
+        .filter(name => name.indexOf('/') < 0);
 
-        // Prefix action types with leaf namespace
-        const typeNames = Object.keys(actions)
-          .concat(Object.keys(reducer))
-          .concat(actionTypes)
-          .filter(name => name.indexOf('/') < 0);
+      leaf.actionTypes = zipObject(
+        typeNames,
+        typeNames.map(getActionType)
+      );
 
-        leaf.actionTypes = zipObject(
-          typeNames,
-          typeNames.map(getActionType)
-        );
-
-        delete this.__leafWillMountTo;
-      },
-
-      /*
-      */
-      __leafDidMount() {
-        // Map prefixed action type names to reducer functions
-        reducerFuncs = mapValues(
-          mapKeys(reducer, (func, name) => (
-            Array.isArray(func)
-              ? func[0].call()
-            : getActionType(name)
-          )),
-          (func) => (Array.isArray(func) ? func[1] : func)
-        );
-        delete this.__leafDidMount;
-      }
-    };
+      delete this.__leafWillMountTo;
+    });
+    definePrivateProperty(leaf, '__leafDidMount', function leafDidMount() {
+      // Map prefixed action type names to reducer functions
+      reducerFuncs = mapValues(
+        mapKeys(reducer, (func, name) => (
+          Array.isArray(func)
+            ? func[0].call()
+          : getActionType(name)
+        )),
+        (func) => (Array.isArray(func) ? func[1] : func)
+      );
+      delete this.__leafDidMount;
+    });
 
     // Resolve action type for given name
     const getActionType = name => (
