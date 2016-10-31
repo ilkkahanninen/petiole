@@ -1,14 +1,14 @@
 {
   "name": "react-example",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "private": true,
   "devDependencies": {
     "react-scripts": "0.7.0"
   },
   "dependencies": {
-    "petiole": "^0.2.3",
-    "petiole-devtools-extension": "^0.2.2",
-    "petiole-thunk": "^0.2.3",
+    "petiole": "^0.2.4",
+    "petiole-devtools-extension": "^0.2.4",
+    "petiole-thunk": "^0.2.4",
     "ramda": "^0.22.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
