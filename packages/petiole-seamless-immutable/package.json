@@ -1,6 +1,6 @@
 {
   "name": "petiole-seamless-immutable",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Auto-immutability support to Petiole with seamless-immutable",
   "main": "lib/index.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "devDependencies": {
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2",
-    "petiole": "*"
+    "petiole": "^0.3.0"
   },
   "dependencies": {
     "seamless-immutable": "^6.3.0"

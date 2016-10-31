@@ -1,6 +1,6 @@
 {
   "name": "petiole-immutable",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Auto-immutability support to Petiole with Immutable.js",
   "main": "lib/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "url": "https://github.com/ilkkahanninen/petiole.git"
   },
   "devDependencies": {
-    "petiole": "*",
+    "petiole": "^0.3.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2"
   },
