@@ -8,7 +8,7 @@ Easy and predictable state container for JavaScript apps.
   * Shortcuts for simple action creators.
   * Automatic action types.
 * Built on [Redux](http://redux.js.org/): most of its tooling & plugins are available.
-* Automatic immutability (via [seamless-immutable](https://github.com/rtfeldman/seamless-immutable)).
+* Automatic immutability via plugins.
 * Easy unit testing.
 * Easily refactorable state:
   * Action type constants are resolved automatically.
@@ -18,6 +18,16 @@ Easy and predictable state container for JavaScript apps.
 
 ## Read more
 
-* [petiole](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole/README.md)
+* [Core documentation](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole/README.md)
+
+## Plugins
+
+### Asynchronicity
 * [petiole-thunk](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-thunk/README.md)
+
+### Immutability
+* [petiole-seamless-immutable](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-seamless-immutable/README.md)
+* [petiole-immutable](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-immutable/README.md)
+
+### Development tools
 * [petiole-devtools-extension](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-devtools-extension/README.md)

@@ -10,7 +10,7 @@ Easy and predictable state container for JavaScript apps.
   * Shortcuts for simple action creators.
   * Automatic action types.
 * Built on [Redux](http://redux.js.org/): most of its tooling & plugins are available.
-* Automatic immutability (via [seamless-immutable](https://github.com/rtfeldman/seamless-immutable)).
+* Automatic immutability via plugins.
 * Easy unit testing.
 * Easily refactorable state:
   * Action type constants are resolved automatically.
@@ -41,10 +41,14 @@ Petiole() returns following functions:
 // petiole.js
 
 import petiole from 'petiole';
-import thunk from 'petiole-thunk';
+import thunk from 'petiole-thunk'; // Plugin for thunk action creators
+import immutable from 'petiole-seamless-immutable'; // Automatic immutable objects
 
-// Instantiate Petiole with thunk plugin:
-const instance = petiole(thunk);
+// Instantiate Petiole with thunk and immutable plugins:
+const instance = petiole(
+  thunk,
+  immutable
+);
 
 // ES6 way to export the API:
 export const {
@@ -75,7 +79,8 @@ const counter = declareLeaf({
   },
   reducer: {
     increase() {
-      // Notice: State is seamless-immutable object so we can use its helper functions
+      // Notice: We loaded seamless-immutable plugin in previous step which makes
+      // the state a seamless-immutable object and we can use its helper functions.
       return state => state.set('value', state.value + 1);
     },
   },
