@@ -3,6 +3,7 @@ const petiole = require('petiole');
 const thunk = require('./index');
 
 const { declareLeaf, createTree, createStore } = petiole(thunk);
+const set = (state, prop, value) => Object.assign({}, state, { [prop]: value });
 
 test('plugin works', function(t) {
   const leaf = declareLeaf({
@@ -20,8 +21,8 @@ test('plugin works', function(t) {
       ready: true,
     },
     reducer: {
-      run: state => state.set('run', true),
-      ready: state => state.set('ready', true),
+      run: state => set(state, 'run', true),
+      ready: state => set(state, 'ready', true),
     },
   });
 
