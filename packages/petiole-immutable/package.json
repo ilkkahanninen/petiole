@@ -1,0 +1,33 @@
+{
+  "name": "petiole-immutable",
+  "version": "0.1.0",
+  "description": "Auto-immutability support to Petiole with Immutable.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "tape lib/*.test.js | tap-spec"
+  },
+  "keywords": [
+    "petiole",
+    "redux",
+    "immutable"
+  ],
+  "author": "Ilkka Hänninen",
+  "license": "MIT",
+  "homepage": "https://github.com/ilkkahanninen/petiole",
+  "bugs": {
+    "url": "https://github.com/ilkkahanninen/petiole/issues",
+    "email": "ilkka.hanninen@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilkkahanninen/petiole.git"
+  },
+  "devDependencies": {
+    "petiole": "*",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.2"
+  },
+  "dependencies": {
+    "immutable": "^3.8.1"
+  }
+}
