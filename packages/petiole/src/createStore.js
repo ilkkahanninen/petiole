@@ -1,5 +1,6 @@
 const { createStore, applyMiddleware, compose } = require('redux');
 const { REDUX_MIDDLEWARE, REDUX_ENHANCER } = require('./pluginWrappers');
+const createTree = require('./createTree');
 
 const isFunction = fn => typeof fn === 'function';
 const pickFunctions = (plugins, prop) => plugins
@@ -20,8 +21,12 @@ module.exports = function createCreateStore(plugins = []) {
       ...enhancers
     );
 
+    const { reducer } = tree.__isTree
+      ? tree
+      : createTree(tree);
+
     return createStore(
-      tree.reducer,
+      reducer,
       preloadedState,
       enhancer
     );

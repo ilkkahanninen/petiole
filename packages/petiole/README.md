@@ -34,7 +34,7 @@ Petiole() returns following functions:
 * declareLeaf(*leafDeclaration: LeafDeclaration*): *PartialLeaf*
 * createTree(*treeStructure: TreeStructure*): *Tree*
 * createOrphanLeaf(*partialLeaf: PartialLeaf, namespace: string*): *Leaf*
-* createStore(*tree: Tree*): *Store*
+* createStore(*tree: Tree|TreeStructure*): *Store*
 * combineLeaflets(*...leafDeclarations: LeafDeclaration*): *LeafDeclaration*
 
 ```javascript
@@ -114,6 +114,8 @@ Ok. We have our action creators but how do access the state and dispatch the act
 import { createStore } from './petiole';
 const store = createStore(tree);
 ```
+
+You can also omit calling *createTree* and pass the tree structure straigh to *createStore*.
 
 Now we have everything together. The store object is actually a Redux store you are hopefully familiar already:
 

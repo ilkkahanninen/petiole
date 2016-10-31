@@ -29,14 +29,12 @@ function extractReducers(tree) {
   );
 }
 
-module.exports = function createCombineTree(/* plugins = [] */) {
-  return function combineTree(structure) {
-    const tree = buildTree(structure);
-    const reducer = extractReducers(tree);
-    const result = {
-      reducer,
-    };
-    definePrivateProperty(result, '__isTree');
-    return result;
+module.exports = function createTree(structure) {
+  const tree = buildTree(structure);
+  const reducer = extractReducers(tree);
+  const result = {
+    reducer,
   };
+  definePrivateProperty(result, '__isTree');
+  return result;
 };

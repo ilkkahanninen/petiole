@@ -1,5 +1,5 @@
 const test = require('tape');
-const createTree = require('./createTree')();
+const createTree = require('./createTree');
 const declareLeaf = require('./declareLeaf')();
 const createStore = require('./createStore')();
 
@@ -34,6 +34,47 @@ test('building a tree works', function(t) {
   });
 
   const store = createStore(tree);
+
+  store.dispatch(dinnerTable.actions.addChair('A'));
+  store.dispatch(dinnerTable.actions.addChair('B'));
+
+  t.deepEqual(store.getState().kitchen.dinnerTable, { chairs: ['A', 'B'], isSetUp: false });
+  t.equal(dinnerTable.selectors.chairCount(store.getState()), 2, 'Selector works');
+  t.deepEqual(users.select(store.getState()), { list: ['John', 'Mary'] }, 'select() works');
+
+  t.end();
+});
+
+
+test('building a store without createTree() works', function(t) {
+  const users = declareLeaf({
+    initialState: {
+      list: ['John', 'Mary']
+    },
+  });
+
+  const dinnerTable = declareLeaf({
+    initialState: {
+      chairs: [],
+      isSetUp: false,
+    },
+    actions: {
+      addChair: 'name',
+    },
+    reducer: {
+      addChair: (state, { name }) => state.set('chairs', state.chairs.concat(name)),
+    },
+    selectors: {
+      chairCount: state => state.chairs.length,
+    }
+  });
+
+  const store = createStore({
+    users,
+    kitchen: {
+      dinnerTable,
+    },
+  });
 
   store.dispatch(dinnerTable.actions.addChair('A'));
   store.dispatch(dinnerTable.actions.addChair('B'));
