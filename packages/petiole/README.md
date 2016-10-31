@@ -35,6 +35,7 @@ Petiole() returns following functions:
 * createTree(*treeStructure: TreeStructure*): *Tree*
 * createOrphanLeaf(*partialLeaf: PartialLeaf, namespace: string*): *Leaf*
 * createStore(*tree: Tree*): *Store*
+* combineLeaflets(*...leafDeclarations: LeafDeclaration*): *LeafDeclaration*
 
 ```javascript
 // petiole.js
@@ -50,6 +51,8 @@ export const {
   declareLeaf,
   createTree,
   createStore,
+  createOrphanLeaf,
+  combineLeaflets,
 } = instance;
 
 // CommonJS way:
@@ -195,3 +198,36 @@ const store = createStore(tree);
 store.dispatch(leafA.actions.trigger());
 store.getState(); // => { a: {}, b: { value: true } }
 ```
+
+Combine leaf from leaflets:
+
+``` javascript
+const fetchableListLeaflet = {
+  initialState: {
+    list: [],
+    isFetching: false,
+    fetchError: null,
+  },
+  actions: {
+    receive: 'list',
+    fetchError: 'error',
+  },
+  reducer: {
+    fetch: state => state.set('isFetching', true),
+    receive: (state, { list }) => state.merge({ isFetching: false, list, error: null }),
+    fetchError: (state, { error }) => state.merge({ isFetching: false, error })
+  },
+};
+
+const usersLeafDecl = combineLeaflets(
+  fetchableListLeaflet,
+  {
+    actions: {
+      fetch: dispatch => ClientAPI.getUsers().then(this.receive).catch(this.fetchError)
+    }
+  }
+);
+
+const users = declareLeaf(usersLeafDecl);
+```
+
