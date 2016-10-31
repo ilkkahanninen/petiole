@@ -4,7 +4,7 @@
   "description": "Thunk plugin for Petiole",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tape lib/*.test.js | tap-spec",
+    "test": "tape src/*.test.js | tap-spec",
     "build": "babel ./src --out-dir ./lib --ignore test.js",
     "prepublish": "rm -rf lib && npm run build"
   },
