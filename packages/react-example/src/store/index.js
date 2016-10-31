@@ -5,4 +5,6 @@ const store = createStore({
   items,
 });
 
+store.dispatch(items.actions.setName('New TODO App'));
+
 export default store;
