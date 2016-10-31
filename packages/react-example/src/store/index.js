@@ -1,10 +1,8 @@
-import { createTree, createStore } from './petiole';
+import { createStore } from './petiole';
 import items from './items';
 
-const tree = createTree({
+const store = createStore({
   items,
 });
-
-const store = createStore(tree);
 
 export default store;

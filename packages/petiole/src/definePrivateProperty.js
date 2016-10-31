@@ -6,6 +6,7 @@ function definePrivateProperty(obj, prop, value = true) {
       value,
       enurable: false,
       writable: false,
+      configurable: true,
     }
   );
   return obj;

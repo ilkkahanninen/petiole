@@ -4,7 +4,6 @@ import devtools from 'petiole-devtools-extension';
 
 export const {
   declareLeaf,
-  createTree,
   createStore,
 } = petiole(
   thunk,
