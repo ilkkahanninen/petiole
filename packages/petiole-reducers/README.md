@@ -24,7 +24,7 @@ Returns the value from the action with the supplied property name.
   },
   reducers: {
     setName: merge({
-      name: pluck('newName),
+      name: pluck('newName'),
     })
   },
 }

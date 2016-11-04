@@ -20,6 +20,10 @@ Easy and predictable state container for JavaScript apps.
 
 * [Core documentation](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole/README.md)
 
+## Helpers and utilities
+
+* [petiole-reducers](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-reducers/README.md)
+
 ## Plugins
 
 ### Asynchronicity
