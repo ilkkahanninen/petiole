@@ -1,8 +1,10 @@
 const test = require('tape');
-const merge = require('../objects/merge');
-const pluck = require('../type-agnostic/pluck');
-const add = require('./add');
-const subtract = require('./subtract');
+const {
+  merge,
+  pluck,
+  add,
+  subtract
+} = require('./index');
 
 test('add: adds correctly', function(t) {
   const state = {

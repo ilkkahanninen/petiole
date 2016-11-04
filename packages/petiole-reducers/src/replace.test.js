@@ -1,5 +1,7 @@
 const test = require('tape');
-const replace = require('./replace');
+const {
+  replace,
+} = require('./index');
 
 test('replace: returns correct value', function(t) {
   const src = {};

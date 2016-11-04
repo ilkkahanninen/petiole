@@ -10,6 +10,7 @@
     "petiole-devtools-extension": "^0.2.4",
     "petiole-thunk": "^0.3.0",
     "petiole-seamless-immutable": "^0.3.0",
+    "petiole-reducers": "*",
     "ramda": "^0.22.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",

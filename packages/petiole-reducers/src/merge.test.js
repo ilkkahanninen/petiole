@@ -1,6 +1,8 @@
 const test = require('tape');
-const merge = require('./merge');
-const pluck = require('../type-agnostic/pluck');
+const {
+  merge,
+  pluck,
+} = require('./index');
 
 test('merge: merges correctly', function(t) {
   const src = {

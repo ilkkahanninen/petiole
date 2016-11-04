@@ -9,6 +9,10 @@ module.exports = {
   subtract: require('./numbers/subtract'),
 
   // Array reducers
+  push: require('./arrays/push'),
+  pushMany: require('./arrays/pushMany'),
+  remove: require('./arrays/remove'),
+  removeAtIndex: require('./arrays/removeAtIndex'),
 
   // Type agnostic reducers
   pluck: require('./type-agnostic/pluck'),

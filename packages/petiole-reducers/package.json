@@ -4,7 +4,9 @@
   "description": "Utility library for writing cleaner Petiole reducers",
   "main": "lib/index.js",
   "scripts": {
-    "test": "tape src/**/*.test.js | tap-spec"
+    "test": "tape src/**.test.js | tap-spec",
+    "build": "babel ./src --out-dir ./lib --ignore test.js",
+    "prepublish": "rm -rf lib && npm run build"
   },
   "keywords": [
     "petiole",
@@ -17,6 +19,8 @@
   "author": "Ilkka Hänninen",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.2"
   },

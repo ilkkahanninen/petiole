@@ -1,5 +1,10 @@
 import { declareLeaf } from './petiole';
-import { remove } from 'ramda';
+import {
+  merge,
+  push,
+  pluck,
+  removeAtIndex
+} from 'petiole-reducers';
 
 export default declareLeaf({
   initialState: {
@@ -18,20 +23,14 @@ export default declareLeaf({
     itemCount: state => state.list.length,
   },
   reducer: {
-    setName(state, { name }) {
-      return state.set('name', name);
-    },
-    addItem(state, { item }) {
-      return {
-        ...state,
-        list: state.list.concat(item)
-      };
-    },
-    removeItem(state, { index }) {
-      return {
-        ...state,
-        list: remove(index, 1, state.list)
-      };
-    },
+    setName: merge({
+      name: pluck('name'),
+    }),
+    addItem: merge({
+      list: push(pluck('item')),
+    }),
+    removeItem: merge({
+      list: removeAtIndex(pluck('index')),
+    }),
   }
 });
