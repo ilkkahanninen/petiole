@@ -15,7 +15,7 @@ class App extends Component {
   }
 
   render() {
-    const { items, removeItem } = this.props;
+    const { items, removeItem, itemCount } = this.props;
     return (
       <div className="App">
         <div className="App-header">
@@ -31,6 +31,7 @@ class App extends Component {
             </li>
           ))}
         </ul>
+        <p>{itemCount} items</p>
         <input ref="newItem" />
         <button onClick={this.addItem}>Add</button>
       </div>

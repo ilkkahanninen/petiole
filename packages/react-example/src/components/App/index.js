@@ -1,15 +1,13 @@
 import App from './App';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { connect } from 'react-petiole';
 import items from '../../store/items';
 
-export default connect(
-  state => ({
-    items: items.select(state),
-    itemCount: items.selectors.itemCount(state),
-  }),
-  dispatch => bindActionCreators(
-    items.actions,
-    dispatch
-  )
-)(App);
+export default connect({
+  state: {
+    items,
+    itemCount: items.selectors.itemCount,
+  },
+  actions: {
+    ...items.actions,
+  },
+})(App);
