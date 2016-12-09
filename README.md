@@ -23,6 +23,7 @@ Easy and predictable state container for JavaScript apps.
 ## Helpers and utilities
 
 * [petiole-reducers](https://github.com/ilkkahanninen/petiole/blob/master/packages/petiole-reducers/README.md)
+* [react-petiole](https://github.com/ilkkahanninen/petiole/blob/master/packages/react-petiole/README.md)
 
 ## Plugins
 

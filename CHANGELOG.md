@@ -1,5 +1,9 @@
 # Petiole change log
 
+## 0.3.1 (2016-12-09)
+
+* Official React bindings plugin: react-petiole
+
 ## 0.3.0 (2016-10-31)
 
 * Auto-immutability removed from the core and moved to two new plugins:
