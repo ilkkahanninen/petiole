@@ -10,4 +10,10 @@ export default connect({
   actions: {
     ...items.actions,
   },
+  actionsWithProps: props => ({
+    test: (msg) => {
+      console.log('Hello', msg, 'with', props);
+      return { type: '##TEST' };
+    },
+  })
 })(App);

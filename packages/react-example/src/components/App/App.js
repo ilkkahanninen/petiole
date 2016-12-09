@@ -8,6 +8,10 @@ class App extends Component {
     this.addItem = this.addItem.bind(this);
   }
 
+  componentWillMount() {
+    this.props.test('World');
+  }
+
   addItem() {
     const { newItem } = this.refs;
     this.props.addItem(newItem.value);
