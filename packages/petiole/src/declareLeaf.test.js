@@ -128,11 +128,13 @@ test('selector uses namespace to select correct branch of state', function(t) {
   const state = {
     test: {
       items: [1, 2, 3],
+      name: 'John',
     },
   };
 
   t.equal(leaf.selectors.itemCount(state), 3);
   t.equal(leaf.selectors.itemsBefore(state, 3), 2);
+  t.equal(leaf.selectProp('name')(state), 'John');
   t.end();
 });
 

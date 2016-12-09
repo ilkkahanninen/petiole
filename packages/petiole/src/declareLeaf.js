@@ -118,6 +118,7 @@ function createDeclareLeaf(plugins = []) {
 
     // Utility to get state branch associated to this leaf
     leaf.select = state => get(state, namespaceArray);
+    leaf.selectProp = prop => state => get(state, namespaceArray)[prop];
 
     return leaf;
   };
