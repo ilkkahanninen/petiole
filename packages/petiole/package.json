@@ -1,6 +1,6 @@
 {
   "name": "petiole",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "State management built on Redux",
   "main": "lib/index.js",
   "directories": {
